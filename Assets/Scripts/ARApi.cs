@@ -21,8 +21,8 @@ public class ARApi : MonoBehaviour
         #endif  
 
         #if UNITY_ANDROID
-        Debug.Log("Android");
-        // ARSession = Instantiate(AndroidPrefab);
+        //Debug.Log("Android");
+        //ARSession = Instantiate(AndroidPrefab);
         #endif  	
 
     }

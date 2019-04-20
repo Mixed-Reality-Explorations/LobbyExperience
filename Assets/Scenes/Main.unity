@@ -141,7 +141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c7262d2cae274b87be4441bd03974eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IOSPrefab: {fileID: 8476701090698284956, guid: 228f07b4e817146fb9dd6864790c7026,
+  IOSPrefab: {fileID: 4296192353485948409, guid: c8738bc7dac2b43d2b0362ab26a7a5ec,
     type: 3}
 --- !u!4 &784705190
 Transform:
