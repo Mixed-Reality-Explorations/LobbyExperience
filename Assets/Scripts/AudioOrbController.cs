@@ -25,18 +25,27 @@ public class AudioOrbController : MonoBehaviour
 
     public void ShowAudioOrb()
     {
-        if(!isOpen)
+        UAR.Logger.log(UAR.Logger.Type.Info, "Show Audio Orb: {0}", !isOpen);
+
+        if (!isOpen)
         {
-            Vector3 orbPosition = Camera.main.transform.position + (2.0f * Camera.main.transform.forward);
-            audioOrb = Instantiate(prefabToGenerate, orbPosition, Quaternion.identity);
-            anchorId = audioOrb.GetComponent<UnityARUserAnchorComponent>().AnchorId;
+
+            //Vector3 orbPosition = orbT.InverseTransformPoint(transform.position);
+            //Quaternion orbQuaternion = Quaternion.identity * orbT.TransformDirection(transform.rotation * transform.forward);
+
+            GameObject go = new GameObject();
+            Transform orbT = go.transform;
+            orbT.position = Camera.main.transform.position + (0.5f * Camera.main.transform.forward);
+            orbT.LookAt(Camera.main.transform, Vector3.up);
+            audioOrb = Instantiate(prefabToGenerate, orbT.position, orbT.rotation, transform);
             isOpen = true;
+
         } else
         {
-            UnityARSessionNativeInterface.GetARSessionNativeInterface().RemoveUserAnchor(anchorId);
             Destroy(audioOrb);
             isOpen = false;
         }
 
     }
+
 }
