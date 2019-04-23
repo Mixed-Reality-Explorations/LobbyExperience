@@ -54,7 +54,7 @@ public class UnityARUserAnchorExample : MonoBehaviour {
 			m_TimeUntilRemove = 4.0f;
 		}
 
-		// just remove anchors afte a certain amount of time for example's sake.
+		// just remove anchors after a certain amount of time for example's sake.
 		m_TimeUntilRemove -= Time.deltaTime;
 		if (m_TimeUntilRemove <= 0.0f)
 		{
