@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using Firebase;
-using Firebase.Database;
-using Firebase.Storage;
-using Firebase.Unity.Editor;
+//using Firebase;
+//using Firebase.Database;
+//using Firebase.Storage;
+//using Firebase.Unity.Editor;
 using System.Threading.Tasks;
 
 
@@ -14,10 +14,10 @@ public class DBController : MonoBehaviour
 
     public AudioSource audioSource;
 
-    private DatabaseReference reference;
-    private FirebaseStorage storage;
-    private StorageReference audio_ref;
-    private StorageReference storage_ref;
+    //private DatabaseReference reference;
+    //private FirebaseStorage storage;
+    //private StorageReference audio_ref;
+    //private StorageReference storage_ref;
 
     private float[] audioData;
 
@@ -38,14 +38,14 @@ public class DBController : MonoBehaviour
         UAR.Logger.log(UAR.Logger.Type.Info, "DBController - Database Setting Up.");
 
         // Get a reference to the storage service, using the default Firebase App
-        FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://reflections-51bdd.firebaseio.com/");
+        //FirebaseApp.DefaultInstance.SetEditorDatabaseUrl("https://reflections-51bdd.firebaseio.com/");
 
         // Get the root reference location of the database.
-        reference = FirebaseDatabase.DefaultInstance.RootReference;
+        //reference = FirebaseDatabase.DefaultInstance.RootReference;
 
-        storage = FirebaseStorage.DefaultInstance;
-        storage_ref = storage.GetReferenceFromUrl("gs://reflections-51bdd.appspot.com");
-        audio_ref = storage_ref.Child("audioTest");
+        //storage = FirebaseStorage.DefaultInstance;
+        //storage_ref = storage.GetReferenceFromUrl("gs://reflections-51bdd.appspot.com");
+        //audio_ref = storage_ref.Child("audioTest");
     }
 
     public void testDownload()
