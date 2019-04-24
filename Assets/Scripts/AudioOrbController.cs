@@ -6,22 +6,10 @@ using UnityEngine.XR.iOS;
 public class AudioOrbController : MonoBehaviour
 {
 
-    public GameObject prefabToGenerate;
+    public GameObject orbPrefab;
     private GameObject audioOrb;
     private string anchorId;
     private bool isOpen;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void ShowAudioOrb()
     {
@@ -37,7 +25,7 @@ public class AudioOrbController : MonoBehaviour
             Transform orbT = go.transform;
             orbT.position = Camera.main.transform.position + (0.5f * Camera.main.transform.forward);
             orbT.LookAt(Camera.main.transform, Vector3.up);
-            audioOrb = Instantiate(prefabToGenerate, orbT.position, orbT.rotation, transform);
+            audioOrb = Instantiate(orbPrefab, orbT.position, orbT.rotation, transform);
             isOpen = true;
 
         } else

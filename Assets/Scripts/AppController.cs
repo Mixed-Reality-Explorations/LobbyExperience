@@ -14,12 +14,8 @@ public class AppController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
-        UAR.Logger.log(UAR.Logger.Type.Info, "Start() called in AppControllers");
-
         UAR.UAR.IAnchorAdded += ImageAnchorAdded;
         UAR.UAR.IAnchorUpdated += ImageAnchorUpdated;
-
     }
 
     // Update is called once per frame
@@ -30,7 +26,6 @@ public class AppController : MonoBehaviour
 
     void ImageAnchorAdded(IAnchor anchor)
     {
-        UAR.Logger.log(UAR.Logger.Type.Info, "Name of Added Anchor: {0}", anchor.imgName);
         if (!originDetected && anchor.imgName == "StartImg")
         {
             AppStarted(anchor);
