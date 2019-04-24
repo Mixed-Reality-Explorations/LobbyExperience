@@ -51,29 +51,29 @@ public class DBController : MonoBehaviour
     public void testDownload()
     {
 
-        UAR.Logger.log(UAR.Logger.Type.Info, "DBController - Downloading AudioTest.");
-        byte[] fileContents = { };
-        const long maxAllowedSize = 34008512;
+        //UAR.Logger.log(UAR.Logger.Type.Info, "DBController - Downloading AudioTest.");
+        //byte[] fileContents = { };
+        //const long maxAllowedSize = 34008512;
 
-        audio_ref.GetBytesAsync(maxAllowedSize).ContinueWith((Task<byte[]> task) =>
-        {
-            if (task.IsFaulted || task.IsCanceled)
-            {
-                Debug.Log("Downloading Failed");
-                Debug.Log(task.Exception.ToString());
-                // Uh-oh, an error occurred!
-            }
-            else
-            {
+        //audio_ref.GetBytesAsync(maxAllowedSize).ContinueWith((Task<byte[]> task) =>
+        //{
+        //    if (task.IsFaulted || task.IsCanceled)
+        //    {
+        //        Debug.Log("Downloading Failed");
+        //        Debug.Log(task.Exception.ToString());
+        //        // Uh-oh, an error occurred!
+        //    }
+        //    else
+        //    {
 
-                fileContents = task.Result;
-                UAR.Logger.log(UAR.Logger.Type.Info, "DBController - Download Done.");
-                audioData = new float[fileContents.Length / 4];
+        //        fileContents = task.Result;
+        //        UAR.Logger.log(UAR.Logger.Type.Info, "DBController - Download Done.");
+        //        audioData = new float[fileContents.Length / 4];
 
-                System.Buffer.BlockCopy(fileContents, 0, audioData, 0, fileContents.Length);
-                audioSource.Play();
-            }
-        });
+        //        System.Buffer.BlockCopy(fileContents, 0, audioData, 0, fileContents.Length);
+        //        audioSource.Play();
+        //    }
+        //});
     }
 
 }
