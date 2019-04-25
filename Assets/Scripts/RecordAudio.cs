@@ -4,33 +4,44 @@ using UnityEngine;
 
 public class RecordAudio : MonoBehaviour
 {
-    
+
     public AudioSource audioSource;
+    private bool micInitialized;
 
+    public float sensitivity;
+    public bool blown;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        foreach (var device in Microphone.devices) {
-            Debug.Log("====== Name: " + device);
+    void Awake() {
+        if (!audioSource) {
+            audioSource = GetComponent<AudioSource>();
+        } else
+        {
+            UAR.Logger.log(UAR.Logger.Type.Info, "You must attach an AudioSource.");
         }
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void Record() {
-        AudioSource audioSource = GetComponent<AudioSource>();
-        Debug.Log("Start Recording");
-        audioSource.clip = Microphone.Start("iPhone audio input", false, 5, 44100);
-        Debug.Log("Done Recording");
+
+        Delete();
+
+        if (Microphone.devices.Length > 0) {
+            audioSource.clip = Microphone.Start(Microphone.devices[0], false, 5, 44100);
+        }
+
     }
 
     public void Play() {
-        audioSource.Play();
+        if (audioSource.clip) {
+            audioSource.Play();
+        } else
+        {
+            UAR.Logger.log(UAR.Logger.Type.Info, "There is no audio to play.");
+        }
+    }
+
+    public void Delete()
+    {
+        audioSource.Stop();
+        Destroy(audioSource.clip);
     }
 }
