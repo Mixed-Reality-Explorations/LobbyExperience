@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UAR;
 
 using Firebase;
 using Firebase.Database;
@@ -83,7 +84,7 @@ public class Prayer
         db.GetReference(category).GetValueAsync().ContinueWith(task => {
             if (task.Exception != null)
             {
-                Debug.LogFormat("[ERROR]: {0}", task.Exception);
+                UAR.Logger.log(UAR.Logger.Type.Error, "Fetch position ERROR: {0}", task.Exception);
                 callback(null, task.Exception);
                 return;
             }
@@ -119,7 +120,7 @@ public class Prayer
             }
             catch (Exception e)
             {
-                Debug.Log(e);
+                UAR.Logger.log(UAR.Logger.Type.Error, "Creating Prayer from fetch: {0}", e);
             }
 
             callback(prayers, null);
@@ -134,7 +135,7 @@ public class Prayer
         storage.GetReference(id).GetBytesAsync(bufferSize).ContinueWith(task => {
             if (task.Exception != null)
             {
-                Debug.LogFormat("[ERROR]: {0}", task.Exception);
+                UAR.Logger.log(UAR.Logger.Type.Error, "Fetch Audio ERROR: {0}", task.Exception);
                 callback(null, task.Exception);
                 return;
             }
@@ -154,16 +155,16 @@ public class Prayer
         db.RootReference.Child(category).Child(id).SetRawJsonValueAsync(jsonstr).ContinueWith(task=> {
             if (task.Exception != null)
             {
-                Debug.LogFormat("[ERROR]: {0}", task.Exception);
+                UAR.Logger.log(UAR.Logger.Type.Error, "Upload ERROR: {0}", task.Exception);
                 callback(task.Exception);
                 return;
             }
 
-            uploadAudio(id, callback);
+            uploadAudio(callback);
         });
     }
 
-    void uploadAudio(string id, Action<AggregateException> callback)
+    void uploadAudio(Action<AggregateException> callback)
     {
         int bufferSize = audio.Length * sizeof(float);
         byte[] buffer = new byte[bufferSize];
@@ -173,9 +174,14 @@ public class Prayer
         {
             if (task.Exception != null)
             {
-                Debug.LogFormat("[ERROR]: {0}", task.Exception);
+                UAR.Logger.log(UAR.Logger.Type.Error, "upload audio Error: {0}", task.Exception);
                 callback(task.Exception);
                 return;
+            }
+            
+            if (task.IsCompleted)
+            {
+                UAR.Logger.log(UAR.Logger.Type.Info, "Audio Uploaded");
             }
 
             callback(null);
@@ -210,16 +216,16 @@ public class DBController : MonoBehaviour
         }
     }
 
-    public void upload(AudioSource recAudio)
+    public void upload(AudioSource recAudio, Vector3 position, Quaternion rotation)
     {
 
-        var p = new Prayer("categoryOne", Vector3.zero, Quaternion.identity);
+        var p = new Prayer("categoryOne", position, rotation);
         p.audio = new float[recAudio.clip.samples * sizeof(float)];
         recAudio.clip.GetData(p.audio, 0);
 
         p.upload(e =>
         {
-            Debug.LogFormat("exception? {0}", e);
+            UAR.Logger.log(UAR.Logger.Type.Info, "upload exception? {0}", e);
         });
 
     }
@@ -228,7 +234,7 @@ public class DBController : MonoBehaviour
     {
         Prayer.fetch("categoryOne", (prayers, e) =>
         {
-            Debug.LogFormat("prayer exception? {0}", e);
+            UAR.Logger.log(UAR.Logger.Type.Info, "prayer exception? {0}", e);
 
             if (e == null)
             {
@@ -237,7 +243,7 @@ public class DBController : MonoBehaviour
 
                 p.fetchAudio((a, e2) =>
                 {
-                    Debug.LogFormat("audio exception? {0}", e2);
+                    UAR.Logger.log(UAR.Logger.Type.Info, "audio exception? {0}", e2);
 
                     if (e2 == null)
                     {
@@ -245,7 +251,7 @@ public class DBController : MonoBehaviour
                             clip = AudioClip.Create(p.id, p.audio.Length, 1, 44100, false);
                             clip.SetData(p.audio, 0);
 
-                            Debug.Log("About to play audio:");
+                            UAR.Logger.log(UAR.Logger.Type.Info, "About to play audio");
                             AudioSource.PlayClipAtPoint(clip, Vector3.zero);
                         });                        
                     }

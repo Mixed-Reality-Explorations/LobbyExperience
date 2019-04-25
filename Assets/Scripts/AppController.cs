@@ -14,14 +14,16 @@ public class AppController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
         UAR.UAR.IAnchorAdded += ImageAnchorAdded;
         UAR.UAR.IAnchorUpdated += ImageAnchorUpdated;
-    }
 
+    }
+    
     // Update is called once per frame
     void Update()
     {
-        
+        Debug.Log("Stop Me Here");
     }
 
     void ImageAnchorAdded(IAnchor anchor)

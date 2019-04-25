@@ -18,13 +18,10 @@ public class AudioOrbController : MonoBehaviour
         if (!isOpen)
         {
 
-            //Vector3 orbPosition = orbT.InverseTransformPoint(transform.position);
-            //Quaternion orbQuaternion = Quaternion.identity * orbT.TransformDirection(transform.rotation * transform.forward);
-
             GameObject go = new GameObject();
             Transform orbT = go.transform;
             orbT.position = Camera.main.transform.position + (0.5f * Camera.main.transform.forward);
-            orbT.LookAt(Camera.main.transform, Vector3.up);
+            orbT.rotation = Quaternion.LookRotation(orbT.position - Camera.main.transform.position);
             audioOrb = Instantiate(orbPrefab, orbT.position, orbT.rotation, transform);
             isOpen = true;
 

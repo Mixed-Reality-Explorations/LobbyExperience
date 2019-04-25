@@ -142,7 +142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_camera: {fileID: 518896278566642016}
   startAlignment: 0
-  planeDetection: 0
+  planeDetection: 3
   getPointCloud: 1
   enableLightEstimation: 1
   enableAutoFocus: 1
