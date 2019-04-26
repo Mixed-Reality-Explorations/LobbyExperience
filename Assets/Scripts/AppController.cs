@@ -13,6 +13,7 @@ public class AppController : MonoBehaviour
     public bool originDetected;
     public Dictionary<string, GameObject> categoryWorlds = new Dictionary<string, GameObject>();
     public string[] categories;
+    private GameObject tarotPrefab;
 
     public GameObject mainButton;
     public GameObject scanButton;
@@ -71,7 +72,14 @@ public class AppController : MonoBehaviour
         }
         else if (!inWorld)
         {
-            enterCategoryWorld(anchor.imgName);
+            if (anchor.imgName == "theStoryteller" || anchor.imgName == "animalWhisperer" || anchor.imgName == "theGiver" || anchor.imgName == "theSnowFox")
+            {
+                enterTarotWorld(anchor);
+            } else
+            {
+                enterCategoryWorld(anchor.imgName);
+
+            }
         }
     }
 
@@ -96,7 +104,19 @@ public class AppController : MonoBehaviour
         testGO = Instantiate(testPrefab, anchor.pose.position, anchor.pose.rotation, transform);
 
         mainButton.SetActive(true);
+        scanButton.SetActive(true);
 
+    }
+
+    public void enterTarotWorld(IAnchor anchor)
+    {
+        switch (anchor.imgName)
+        {
+            case "theStoryteller":
+                var tarotGO = Instantiate(Resources.Load(anchor.imgName), anchor.pose.position, anchor.pose.rotation);
+                break;
+            //write other cases and test
+        }
     }
 
     public void enterCategoryWorld(string category)
@@ -131,6 +151,7 @@ public class AppController : MonoBehaviour
 
     public void exitCategoryWorld()
     {
+        UAR.Logger.log(UAR.Logger.Type.Info, "exiting current world");
         categoryWorlds[activeCategory].SetActive(false);
         activeCategory = null;
         inWorld = false;
