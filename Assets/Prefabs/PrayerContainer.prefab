@@ -9,10 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6961182583800642358}
-  - component: {fileID: 591220497113566672}
-  - component: {fileID: 200498581187098521}
   - component: {fileID: 2179748726233155391}
   - component: {fileID: 2606870625296910243}
+  - component: {fileID: 8136852666943582538}
   m_Layer: 0
   m_Name: PrayerContainer
   m_TagString: Untagged
@@ -36,38 +35,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &591220497113566672
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4202372111402700904}
-  m_Enabled: 0
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 33b4629b30c88f9409cdceea226a9f2d, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
---- !u!135 &200498581187098521
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4202372111402700904}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 3.55
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &2179748726233155391
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -80,6 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67d4ded3f4925404bb9b6ec57f79270b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  flame: {fileID: 8247818290361099444}
 --- !u!82 &2606870625296910243
 AudioSource:
   m_ObjectHideFlags: 0
@@ -176,6 +144,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!135 &8136852666943582538
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4202372111402700904}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.35
+  m_Center: {x: 0, y: 0.1, z: 0}
 --- !u!1001 &393453576059811619
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -350,11 +331,21 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 1.13
       objectReference: {fileID: 0}
+    - target: {fileID: 19993866, guid: 048e6d2f00e20514c8eef6934416b268, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 048e6d2f00e20514c8eef6934416b268, type: 3}
 --- !u!4 &8247818290376281876 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 478038, guid: 048e6d2f00e20514c8eef6934416b268,
+    type: 3}
+  m_PrefabInstance: {fileID: 8247818290376623170}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &8247818290361099444 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 19865846, guid: 048e6d2f00e20514c8eef6934416b268,
     type: 3}
   m_PrefabInstance: {fileID: 8247818290376623170}
   m_PrefabAsset: {fileID: 0}

@@ -25,8 +25,6 @@ public class AppController : MonoBehaviour
     [SerializeField]
     private string activeCategory;
     private bool inWorld = false;
-
-    private DBController db;
     private bool isScanning = true;
 
     void Awake()
@@ -73,8 +71,7 @@ public class AppController : MonoBehaviour
         }
         else if (!inWorld)
         {
-            activeCategory = anchor.imgName;
-            enterCategoryWorld();
+            enterCategoryWorld(anchor.imgName);
         }
     }
 
@@ -88,8 +85,7 @@ public class AppController : MonoBehaviour
         }
         else if (!inWorld)
         {
-            activeCategory = anchor.imgName;
-            enterCategoryWorld();
+            enterCategoryWorld(anchor.imgName);
         }
     }
 
@@ -103,8 +99,9 @@ public class AppController : MonoBehaviour
 
     }
 
-    void enterCategoryWorld()
+    public void enterCategoryWorld(string category)
     {
+        activeCategory = category;
         inWorld = true;
         UAR.Logger.log(UAR.Logger.Type.Info, "enter world: {0}", activeCategory);
         categoryWorlds[activeCategory].SetActive(true);
@@ -132,7 +129,7 @@ public class AppController : MonoBehaviour
         });
     }
 
-    void exitCategoryWorld()
+    public void exitCategoryWorld()
     {
         categoryWorlds[activeCategory].SetActive(false);
         activeCategory = null;
