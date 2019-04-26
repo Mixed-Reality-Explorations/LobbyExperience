@@ -22,6 +22,8 @@ public class AudioOrbController : MonoBehaviour
             Transform orbT = go.transform;
             orbT.position = Camera.main.transform.position + (0.5f * Camera.main.transform.forward);
             orbT.rotation = Quaternion.LookRotation(orbT.position - Camera.main.transform.position);
+
+
             audioOrb = Instantiate(orbPrefab, orbT.position, orbT.rotation, transform);
             isOpen = true;
 

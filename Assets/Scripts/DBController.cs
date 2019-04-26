@@ -18,14 +18,14 @@ public class Prayer
     private static FirebaseDatabase db;
     private static FirebaseStorage storage;
 
+    public static string currentCategory = "categoryOne"; //TODO: Remove this
+    private static Dictionary<string, List<Prayer>> prayers = new Dictionary<string, List<Prayer>>();
+    private static Dictionary<string, DatabaseReference> dbReferences = new Dictionary<string, DatabaseReference>();
+
     public string id;
-
     public Vector3 position;
-
     public Quaternion orientation;
-
     public string category;
-
     public float[] audio;
 
     private PrayerSerializable prayerData;
@@ -79,9 +79,74 @@ public class Prayer
         }
     }
 
+    public static void registerForUpdates(string category, Action<List<Prayer>, DatabaseError> callback)
+    {
+        if (dbReferences.ContainsKey(category))
+        {
+            return;
+        }
+
+        dbReferences[category] = db.GetReference(category);
+        dbReferences[category].ChildAdded += (sender, args) => valuesChanged(category, args, callback);
+    }
+
+    private static void valuesChanged(string category, ChildChangedEventArgs args, Action<List<Prayer>, DatabaseError> callback)
+    {
+        if (args.DatabaseError != null)
+        {
+            UAR.Logger.log(UAR.Logger.Type.Error, "DB Error: {0}", args.DatabaseError.Message);
+            callback(null, args.DatabaseError);
+            return;
+        }
+
+        DataSnapshot snapshot = args.Snapshot;
+        var prayer = snapshot;
+        var prayersList = new List<Prayer>();
+
+        try
+        {
+            //foreach (DataSnapshot prayer in dbPrayers)
+            //{
+            var id = (string)prayer.Key;
+
+            var xyz = prayer.Child("position");
+            float x, y, z, w;
+
+            float.TryParse(xyz.Child("x").Value.ToString(), out x);
+            float.TryParse(xyz.Child("y").Value.ToString(), out y);
+            float.TryParse(xyz.Child("z").Value.ToString(), out z);
+            var position = new Vector3(x, y, z);
+
+            var xyzw = prayer.Child("orientation");
+            float.TryParse(xyzw.Child("x").Value.ToString(), out x);
+            float.TryParse(xyzw.Child("y").Value.ToString(), out y);
+            float.TryParse(xyzw.Child("z").Value.ToString(), out z);
+            float.TryParse(xyzw.Child("w").Value.ToString(), out w);
+            var orientation = new Quaternion(x, y, z, w);
+
+            prayersList.Add(new Prayer(id, category, position, orientation));
+            //}
+        }
+        catch (Exception e)
+        {
+            UAR.Logger.log(UAR.Logger.Type.Error, "Prayer Creation Error: {0}", e);
+        }
+
+        callback(prayersList, null);
+    }
+
     public static void fetch(string category, Action<List<Prayer>, AggregateException> callback)
     {
-        db.GetReference(category).GetValueAsync().ContinueWith(task => {
+
+        if (prayers.ContainsKey(category))
+        {
+            callback(prayers[category], null);
+            return;
+        }
+
+        dbReferences[category] = db.GetReference(category);
+
+        dbReferences[category].GetValueAsync().ContinueWith(task => {
             if (task.Exception != null)
             {
                 UAR.Logger.log(UAR.Logger.Type.Error, "Fetch position ERROR: {0}", task.Exception);
@@ -91,7 +156,7 @@ public class Prayer
 
             DataSnapshot snapshot = task.Result;
             var dbPrayers = snapshot.Children;
-            var prayers = new List<Prayer>();
+            var prayersList= new List<Prayer>();
 
             try
             {
@@ -114,8 +179,11 @@ public class Prayer
                     float.TryParse(xyzw.Child("w").Value.ToString(), out w);
                     var orientation = new Quaternion(x, y, z, w);
 
-                    prayers.Add(new Prayer(id, category, position, orientation));
+                    prayersList.Add(new Prayer(id, category, position, orientation));
                 }
+
+                prayers[category] = prayersList;
+                dbReferences[category].ChildAdded += handleChildAdded;
 
             }
             catch (Exception e)
@@ -123,9 +191,28 @@ public class Prayer
                 UAR.Logger.log(UAR.Logger.Type.Error, "Creating Prayer from fetch: {0}", e);
             }
 
-            callback(prayers, null);
+            callback(prayersList, null);
         });
     }
+
+    private static void handleChildAdded(object sender, ChildChangedEventArgs args)
+    {
+        //if (args.DatabaseError != null)
+        //{
+        //    UAR.Logger.log(UAR.Logger.Type.Error, "Handling Child Added caused Error: {e}", args.DatabaseError.Message);
+        //    return;
+        //}
+
+        //Debug.Log(args);
+
+        //if (PrayersAddedEvent != null)
+        //{
+        //    PrayersAddedEvent(new List<Prayer>());
+        //}
+
+        // Do something with data in args.Snapshot;
+    }
+
 
     public void fetchAudio(Action<float[], AggregateException> callback)
     {
@@ -207,6 +294,11 @@ public class DBController : MonoBehaviour
         Prayer.InitDB();
     }
 
+    public void setImageCategory(string imageCategoryName)
+    {
+        Prayer.currentCategory = imageCategoryName;
+    }
+
     private void Update()
     {
         Action action;
@@ -218,8 +310,7 @@ public class DBController : MonoBehaviour
 
     public void upload(AudioSource recAudio, Vector3 position, Quaternion rotation)
     {
-
-        var p = new Prayer("categoryOne", position, rotation);
+        var p = new Prayer(Prayer.currentCategory, position, rotation);
         p.audio = new float[recAudio.clip.samples * sizeof(float)];
         recAudio.clip.GetData(p.audio, 0);
 
@@ -232,7 +323,73 @@ public class DBController : MonoBehaviour
 
     public void download()
     {
-        Prayer.fetch("categoryOne", (prayers, e) =>
+        bool playFirst = true;
+
+        Prayer.registerForUpdates(Prayer.currentCategory, (prayers, e) =>
+        {
+            UAR.Logger.log(UAR.Logger.Type.Info, "prayer exception? {0}", e);
+           
+            if (e == null)
+            {
+                if (!playFirst)
+                {
+                    return;
+                }
+                playFirst = false;
+
+                p = prayers[0];
+                Debug.LogFormat("{0}", p);
+
+                p.fetchAudio((a, e2) =>
+                {
+                    UAR.Logger.log(UAR.Logger.Type.Info, "audio exception? {0}", e2);
+
+                    if (e2 == null)
+                    {
+                        mainQueue.Enqueue(() =>
+                        {
+                            clip = AudioClip.Create(p.id, p.audio.Length, 1, 44100, false);
+                            clip.SetData(p.audio, 0);
+
+                            UAR.Logger.log(UAR.Logger.Type.Info, "About to play audio");
+                            AudioSource.PlayClipAtPoint(clip, Vector3.zero);
+                        });
+                    }
+                });
+            }
+        });
+
+        //Prayer.fetch(Prayer.currentCategory, (prayers, e) =>
+        //{
+        //    UAR.Logger.log(UAR.Logger.Type.Info, "prayer exception? {0}", e);
+
+        //    if (e == null)
+        //    {
+        //        p = prayers[0];
+        //        Debug.LogFormat("{0}", p);
+
+        //        p.fetchAudio((a, e2) =>
+        //        {
+        //            UAR.Logger.log(UAR.Logger.Type.Info, "audio exception? {0}", e2);
+
+        //            if (e2 == null)
+        //            {
+        //                mainQueue.Enqueue(()=>{
+        //                    clip = AudioClip.Create(p.id, p.audio.Length, 1, 44100, false);
+        //                    clip.SetData(p.audio, 0);
+
+        //                    UAR.Logger.log(UAR.Logger.Type.Info, "About to play audio");
+        //                    AudioSource.PlayClipAtPoint(clip, Vector3.zero);
+        //                });                        
+        //            }
+        //        });
+        //    }
+        //});
+    }
+
+    public void downloadPrayers()
+    {
+        Prayer.fetch(Prayer.currentCategory, (prayers, e) =>
         {
             UAR.Logger.log(UAR.Logger.Type.Info, "prayer exception? {0}", e);
 
@@ -247,13 +404,13 @@ public class DBController : MonoBehaviour
 
                     if (e2 == null)
                     {
-                        mainQueue.Enqueue(()=>{
+                        mainQueue.Enqueue(() => {
                             clip = AudioClip.Create(p.id, p.audio.Length, 1, 44100, false);
                             clip.SetData(p.audio, 0);
 
                             UAR.Logger.log(UAR.Logger.Type.Info, "About to play audio");
                             AudioSource.PlayClipAtPoint(clip, Vector3.zero);
-                        });                        
+                        });
                     }
                 });
             }

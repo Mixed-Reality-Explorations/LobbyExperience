@@ -15,3 +15,4 @@ MonoBehaviour:
   resourceGroupName: WolfImageSet
   referenceImages:
   - {fileID: 11400000, guid: 1ad4361c93d8e42be88da768ba3a3416, type: 2}
+  - {fileID: 11400000, guid: 42d37f62fde55fa448ef4ba75572dee8, type: 2}

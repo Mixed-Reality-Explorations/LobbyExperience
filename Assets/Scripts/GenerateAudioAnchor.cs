@@ -34,7 +34,6 @@ public class GenerateAudioAnchor : MonoBehaviour
             AddUIButton();
             //AddAudioFireAnchors(arImageAnchor);
         }
-
     }
 
     void AddTestPrefab(ARImageAnchor arImageAnchor) {
